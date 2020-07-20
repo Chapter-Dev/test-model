@@ -53,7 +53,7 @@ class UserController extends Controller
         
     }
 
-    function register(){
+    function create(){
         $user = $this->user->create(request()->all());
 
         if($user){
