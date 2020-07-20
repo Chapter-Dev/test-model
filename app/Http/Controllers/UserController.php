@@ -54,12 +54,24 @@ class UserController extends Controller
     }
 
     function register(){
+        $user = $this->user->create(request()->all());
 
+        if($user){
+            $token = $this->loginLink->generateToken($user->email);
+
+            return response()->json([
+                'token' => $token
+            ],200);
+        }
+
+        return response()->json([
+            'message' => 'Some error occured peas try again'
+        ],422);
     }
 
     function update(User $user){
         if($user){
-            $user->update($request->all());
+            $user->update(request()->all());
 
             return response()->json([
                 'user' => $user,
