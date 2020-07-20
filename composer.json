@@ -8,6 +8,7 @@
         "php": "^7.2.5",
         "brick/math": "^0.8.15",
         "laravel/lumen-framework": "^7.0",
+        "mmghv/lumen-route-binding": "^1.5",
         "ramsey/uuid": "^4.0"
     },
     "require-dev": {

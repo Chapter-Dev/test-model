@@ -20,7 +20,7 @@ class CreateUsersTable extends Migration
             $table->date('dob')->nullable();
             $table->enum('gender',['male','female'])->nullable();
             $table->string('email')->unique();
-            $table->string('api_token',100);
+            $table->string('api_token',100)->nullable();
             $table->timestamps();
         });
     }

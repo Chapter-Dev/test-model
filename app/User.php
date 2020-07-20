@@ -28,7 +28,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $fillable = [
-        'first_name','last_name','dob','gender', 'email'
+        'uuid','first_name','last_name','dob','gender', 'email'
     ];
 
     /**
@@ -45,7 +45,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     }
 
     protected function scopecheckApiToken($query,$token){
-        return $query->where('token',hash('sha256', $token))->first();
+        return $query->where('token',hash('sha256', $token));
     }
 
     function generateApiToken(){
@@ -58,6 +58,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     }
 
     function scopefindByEmail($query,$email){
-        return $query->where('email',$email)->first();
+        return $query->where('email',$email);
     }
 }

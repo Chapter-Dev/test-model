@@ -2,10 +2,13 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 
 class LoginLink extends Model{
+
+    public $timestamps = false;
 
     protected $fillable = [
         'email' 
@@ -21,16 +24,17 @@ class LoginLink extends Model{
     ];
 
     protected function setTokenAttribute($token){
-        $this->attributes['api_token'] = hash('sha256', $token);
+        $this->attributes['token'] = hash('sha256', $token);
     }
 
     protected function scopecheckHash($query,$token){
-        return $query->where('token',hash('sha256', $token))->first();
+        return $query->where('token',hash('sha256', $token));
     }
 
     function generateToken($email){
         $this->token = $token = Str::random(32);
         $this->email = $email;
+        $this->created_at = Carbon::now();
         $this->save();
 
         return $token;

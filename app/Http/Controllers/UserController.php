@@ -18,7 +18,8 @@ class UserController extends Controller
     }
 
     function login(){
-        $user = $this->user->findByEmail(request()->email);
+        
+        $user = $this->user->findByEmail(request()->email)->first();
 
         if($user){
             $token = $this->loginLink->generateToken($user->email);
@@ -29,16 +30,18 @@ class UserController extends Controller
         }
 
         return response()->json([
-            'message' => 'User does not exist'
+            'message' => 'User does not exist.'
         ],422);
     }
 
     function allowLogin($hash){
-        $link = $this->loginLink->with('user')->checkHash($hash);
+        $link = $this->loginLink->with('user')->checkHash($hash)->first();
 
-        if($link->user){
+        if($link && $link->user){
+
+            $link->user->generateApiToken();
+
             $user = $link->user;
-            $user->generateApiToken();
 
             $link->delete();
 
@@ -48,14 +51,13 @@ class UserController extends Controller
         }
 
         return response()->json([
-            'message' => 'Link Expired or the user does not exist'
+            'message' => 'Link Expired or the user does not exist.'
         ],422);
         
     }
 
-    function create(){
+    function create(Request $request){
         $user = $this->user->create(request()->all());
-
         if($user){
             $token = $this->loginLink->generateToken($user->email);
 
@@ -65,7 +67,7 @@ class UserController extends Controller
         }
 
         return response()->json([
-            'message' => 'Some error occured peas try again'
+            'message' => 'Some error occured please try again.'
         ],422);
     }
 
@@ -75,11 +77,11 @@ class UserController extends Controller
 
             return response()->json([
                 'user' => $user,
-                'message' => 'User updated successfully'
+                'message' => 'User updated successfully.'
             ],200);    
         }
         return response()->json([
-            'message' => 'User does not exist'
+            'message' => 'User does not exist.'
         ],403);
     }
 
@@ -87,11 +89,11 @@ class UserController extends Controller
         if($user){
             return response()->json([
                 'user' => $user,
-                'message' => 'User details'
+                'message' => 'User details obtained successfully.'
             ],200);    
         }
         return response()->json([
-            'message' => 'User does not exist'
+            'message' => 'User does not exist.'
         ],403);
     }
 }
