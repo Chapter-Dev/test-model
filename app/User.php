@@ -53,11 +53,20 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         $this->save();
     }
 
+    function resetApiToken(){
+        $this->api_token = null;
+        $this->save();
+    }
+
     function getApiToken(){
         return $this->api_token;
     }
 
     function scopefindByEmail($query,$email){
         return $query->where('email',$email);
+    }
+
+    function link(){
+        return $this->hasOne(LoginLink::class,'email','email');
     }
 }

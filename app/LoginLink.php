@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class LoginLink extends Model{
 
+    protected $primaryKey = 'email';
+
+    public $incrementing = false;
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -28,7 +32,7 @@ class LoginLink extends Model{
     }
 
     protected function scopecheckHash($query,$token){
-        return $query->where('token',hash('sha256', $token));
+        return $query->where('token',$token);
     }
 
     function generateToken($email){
@@ -37,11 +41,11 @@ class LoginLink extends Model{
         $this->created_at = Carbon::now();
         $this->save();
 
-        return $token;
+        return $this->token;
     }
 
     function user(){
-        $this->belongsTo(User::class,'email','email');
+        return $this->belongsTo(User::class,'email','email');
     }
 
 }

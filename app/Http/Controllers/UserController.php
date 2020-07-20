@@ -17,14 +17,25 @@ class UserController extends Controller
         $this->loginLink = $link;
     }
 
-    function login(){
-        
-        $user = $this->user->findByEmail(request()->email)->first();
+    function login(Request $request){
+        $user = $this->user->with('link')->findByEmail($request->email)->first();
 
         if($user){
+
+            //Check if previous request exists
+            if($user->link){
+                return response()->json([
+                    'message' => 'Request has already been sent once'
+                ],403);
+            }
+
             $token = $this->loginLink->generateToken($user->email);
 
+            if($token)
+                $user->resetApiToken();
+
             return response()->json([
+                'message' => 'Token has been generated',
                 'token' => $token
             ],200);
         }
@@ -33,9 +44,14 @@ class UserController extends Controller
             'message' => 'User does not exist.'
         ],422);
     }
-
+    /**
+     * Login using token and clearance
+     * 
+     * @param string $hash
+     */
     function allowLogin($hash){
-        $link = $this->loginLink->with('user')->checkHash($hash)->first();
+
+        $link = $this->loginLink->checkHash($hash)->with('user')->first();
 
         if($link && $link->user){
 
@@ -46,7 +62,8 @@ class UserController extends Controller
             $link->delete();
 
             return response()->json([
-                'user' => $user
+                'user' => $user,
+                'token' => $user->getApiToken()
             ],200);
         }
 
@@ -71,9 +88,9 @@ class UserController extends Controller
         ],422);
     }
 
-    function update(User $user){
+    function update(Request $request,User $user){
         if($user){
-            $user->update(request()->all());
+            $user->update($request->all());
 
             return response()->json([
                 'user' => $user,
