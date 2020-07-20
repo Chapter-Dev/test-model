@@ -82,4 +82,16 @@ class UserController extends Controller
             'message' => 'User does not exist'
         ],403);
     }
+
+    function details(User $user){
+        if($user){
+            return response()->json([
+                'user' => $user,
+                'message' => 'User details'
+            ],200);    
+        }
+        return response()->json([
+            'message' => 'User does not exist'
+        ],403);
+    }
 }
