@@ -24,15 +24,20 @@ class LoginLink extends Model{
         $this->attributes['api_token'] = hash('sha256', $token);
     }
 
-    protected function checkHash($token){
-        if($this->api_token == hash('sha256', $token)){
-            return true;
-        }
-
-        return false;
+    protected function scopecheckHash($query,$token){
+        return $query->where('token',hash('sha256', $token))->first();
     }
 
-    function generateToken(){
-        $this->token = Str::random(32);
+    function generateToken($email){
+        $this->token = $token = Str::random(32);
+        $this->email = $email;
+        $this->save();
+
+        return $token;
     }
+
+    function user(){
+        $this->belongsTo(User::class,'email','email');
+    }
+
 }

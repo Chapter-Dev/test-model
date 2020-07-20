@@ -44,15 +44,20 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         $this->attributes['api_token'] = hash('sha256', $token);
     }
 
-    protected function checkHash($token){
-        if($this->api_token == hash('sha256', $token)){
-            return true;
-        }
-
-        return false;
+    protected function scopecheckApiToken($query,$token){
+        return $query->where('token',hash('sha256', $token))->first();
     }
 
     function generateApiToken(){
         $this->api_token = Str::random(32);
+        $this->save();
+    }
+
+    function getApiToken(){
+        return $this->api_token;
+    }
+
+    function scopefindByEmail($query,$email){
+        return $query->where('email',$email)->first();
     }
 }
