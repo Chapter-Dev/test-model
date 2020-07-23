@@ -50,11 +50,13 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     function generateApiToken(){
         $this->api_token = Str::random(32);
+        $this->updated_for = 'login';
         $this->save();
     }
 
     function resetApiToken(){
         $this->api_token = null;
+        $this->updated_for = 'login';
         $this->save();
     }
 

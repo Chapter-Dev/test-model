@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use Carbon\Carbon;
 use App\LoginLink;
 use Illuminate\Http\Request;
 
@@ -59,11 +60,11 @@ class UserController extends Controller
 
             $user = $link->user;
 
-            $link->delete();
+            //$link->delete();
 
             return response()->json([
-                'user' => $user,
-                'token' => $user->getApiToken()
+                'uuid' => $user->uuid,
+                'api_token' => $user->getApiToken()
             ],200);
         }
 
@@ -112,5 +113,22 @@ class UserController extends Controller
         return response()->json([
             'message' => 'User does not exist.'
         ],403);
+    }
+
+    function verifyUser(Request $request){
+        $now = Carbon::now();
+        $isUser = $this->user->where('api_token',$request->token)
+                            ->where('uuid',$request->uuid)
+                            ->first();
+        if($now->diffInHours($isUser->updated_at) > 24){
+            $isUser->resetApiToken();
+            return response()->json([
+                'message' => false
+            ],401);
+        }
+
+        return response()->json([
+            'message' => true
+        ],200);
     }
 }
